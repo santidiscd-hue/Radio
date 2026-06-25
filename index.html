@@ -1,0 +1,971 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpotRadio - Tu Radio Personal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #1db954;
+            --primary-dark: #1aa34a;
+            --secondary: #191414;
+            --bg-dark: #121212;
+            --bg-card: #181818;
+            --text-primary: #ffffff;
+            --text-secondary: #b3b3b3;
+            --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e1e1e 0%, #121212 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 40px 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 60px;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, var(--secondary) 0%, var(--bg-dark) 100%);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary) 0%, #1ed760 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            font-weight: bold;
+            box-shadow: 0 4px 20px rgba(29, 185, 84, 0.4);
+        }
+
+        h1 {
+            font-size: 3.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary) 0%, #1ed760 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            font-size: 1.4rem;
+            color: var(--text-secondary);
+            font-weight: 300;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: var(--shadow);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        .player-card {
+            grid-column: 1 / -1;
+        }
+
+        .on-air {
+            display: inline-block;
+            background: #ff0000;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .current-station {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: var(--primary);
+            cursor: pointer;
+            padding: 5px 10px;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+
+        .current-station:hover {
+            background: rgba(29, 185, 84, 0.1);
+        }
+
+        .player-display {
+            background: var(--bg-dark);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 30px;
+            text-align: center;
+            border: 2px solid rgba(29, 185, 84, 0.2);
+        }
+
+        .player-status {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .player-message {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        .controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .control-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            border: none;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(29, 185, 84, 0.3);
+        }
+
+        .control-btn.play {
+            width: 80px;
+            height: 80px;
+        }
+
+        .control-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(29, 185, 84, 0.5);
+        }
+
+        .control-btn:active {
+            transform: scale(0.95);
+        }
+
+        .control-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: white;
+        }
+
+        .control-btn.play svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .volume-icon {
+            width: 24px;
+            height: 24px;
+            fill: var(--text-secondary);
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            width: 200px;
+            height: 6px;
+            border-radius: 5px;
+            background: var(--bg-dark);
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(29, 185, 84, 0.5);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--primary);
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(29, 185, 84, 0.5);
+            border: none;
+        }
+
+        .volume-value {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            min-width: 45px;
+        }
+
+        .channel-nav {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .nav-btn {
+            background: var(--bg-dark);
+            border: 2px solid var(--primary);
+            color: var(--text-primary);
+            padding: 15px 30px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-btn:hover {
+            background: var(--primary);
+            transform: translateX(0) scale(1.05);
+        }
+
+        .nav-btn.prev:hover {
+            transform: translateX(-3px) scale(1.05);
+        }
+
+        .nav-btn.next:hover {
+            transform: translateX(3px) scale(1.05);
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 25px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        h2::before {
+            content: '';
+            width: 6px;
+            height: 30px;
+            background: var(--primary);
+            border-radius: 3px;
+        }
+
+        .card p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            line-height: 1.8;
+        }
+
+        .upload-section {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .upload-btn {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: white;
+            border: none;
+            padding: 18px 35px;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(29, 185, 84, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(29, 185, 84, 0.5);
+        }
+
+        .upload-btn:active {
+            transform: translateY(0);
+        }
+
+        .note {
+            background: rgba(29, 185, 84, 0.1);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-top: 15px;
+        }
+
+        .storage-info {
+            margin-top: 20px;
+            background: var(--bg-dark);
+            border-radius: 12px;
+            padding: 18px 20px;
+        }
+
+        .storage-bar-label {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+        }
+
+        .storage-bar-label span:first-child {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .storage-bar {
+            width: 100%;
+            height: 10px;
+            border-radius: 6px;
+            background: rgba(255, 255, 255, 0.08);
+            overflow: hidden;
+        }
+
+        .storage-bar-fill {
+            height: 100%;
+            width: 0%;
+            border-radius: 6px;
+            background: linear-gradient(90deg, var(--primary) 0%, #1ed760 100%);
+            transition: width 0.4s ease;
+        }
+
+        .storage-hint {
+            margin-top: 10px;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .playlist {
+            background: var(--bg-dark);
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 20px;
+        }
+
+        .playlist-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .playlist-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .playlist-count {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .playlist-empty {
+            text-align: center;
+            color: var(--text-secondary);
+            padding: 40px 20px;
+            font-size: 1.1rem;
+        }
+
+        .playlist-item {
+            background: rgba(29, 185, 84, 0.1);
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            color: var(--text-primary);
+        }
+
+        .playlist-item:hover {
+            background: rgba(29, 185, 84, 0.2);
+            transform: translateX(5px);
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .station-logo {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, var(--primary) 0%, #1ed760 100%);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            box-shadow: 0 4px 20px rgba(29, 185, 84, 0.4);
+            margin-bottom: 20px;
+        }
+
+        .station-logo:hover {
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 968px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            .current-station {
+                font-size: 2rem;
+            }
+
+            .logo {
+                width: 60px;
+                height: 60px;
+                font-size: 28px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 20px 10px;
+            }
+
+            .card {
+                padding: 25px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .tagline {
+                font-size: 1.1rem;
+            }
+
+            .controls {
+                gap: 12px;
+            }
+
+            .control-btn {
+                width: 50px;
+                height: 50px;
+            }
+
+            .control-btn.play {
+                width: 65px;
+                height: 65px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo-container">
+                <div class="logo">SR</div>
+            </div>
+            <h1>SpotRadio</h1>
+            <p class="tagline">Spotify + Radio</p>
+        </header>
+
+        <div class="main-content">
+            <div class="card player-card">
+                <div class="station-logo" id="stationLogo" title="Click para cambiar logo">🎵</div>
+                <span class="on-air">● ON AIR</span>
+                <div class="current-station" id="stationName" title="Click para editar">BEAT FM</div>
+
+                <div class="player-display">
+                    <div class="player-status">Ahora suena</div>
+                    <div class="player-message" id="trackName">No hay archivo reproduciéndose</div>
+                </div>
+
+                <audio id="audioPlayer" style="display: none;"></audio>
+
+                <div class="controls">
+                    <button class="control-btn" id="prevBtn" aria-label="Anterior">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/>
+                        </svg>
+                    </button>
+                    <button class="control-btn" id="stopBtn" aria-label="Detener">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M6 6h12v12H6z"/>
+                        </svg>
+                    </button>
+                    <button class="control-btn play" id="playBtn" aria-label="Reproducir">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M8 5v14l11-7z"/>
+                        </svg>
+                    </button>
+                    <button class="control-btn" id="nextBtn" aria-label="Siguiente">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M16 18h2V6h-2zm-11-7l8.5-6v12z"/>
+                        </svg>
+                    </button>
+                </div>
+
+                <div class="volume-control">
+                    <svg class="volume-icon" viewBox="0 0 24 24">
+                        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                    </svg>
+                    <input type="range" min="0" max="100" value="100" id="volumeSlider" aria-label="Control de volumen">
+                    <span class="volume-value" id="volumeValue">100%</span>
+                </div>
+
+                <div class="channel-nav">
+                    <button class="nav-btn prev" id="prevChannel">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M15.41 7.41L14 6l-6 6 6 6 1.41-1.41L10.83 12z"/>
+                        </svg>
+                        Canal Anterior
+                    </button>
+                    <button class="nav-btn next" id="nextChannel">
+                        Canal Siguiente
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📻 Canales</h2>
+                <p>Selecciona un canal para guardar y reproducir tus archivos. Cada canal funciona como una estación de radio personalizada con tu contenido favorito.</p>
+                <div class="playlist" id="playlist">
+                    <div class="playlist-header">
+                        <div class="playlist-title">Beat FM</div>
+                        <div class="playlist-count" id="playlistCount">0 archivos</div>
+                    </div>
+                    <div class="playlist-empty">
+                        No hay archivos en este canal.<br>
+                        ¡Sube tu primer track!
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>📤 Subir Contenido</h2>
+                <p>Sube tus archivos MP3, MP4 o videos para crear tu propia estación de radio. Organiza tu contenido por canales y disfruta de tu música personalizada.</p>
+                <div class="upload-section">
+                    <button class="upload-btn" onclick="document.getElementById('audioInput').click()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M9 16h6v-6h4l-7-7-7 7h4zm-4 2h14v2H5z"/>
+                        </svg>
+                        Seleccionar MP3 / MP4 / Video
+                    </button>
+                    <button class="upload-btn" onclick="document.getElementById('logoInput').click()">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                        </svg>
+                        Cambiar Logo del Canal
+                    </button>
+                </div>
+                <div class="note">
+                    💡 Recuerda: Selecciona un canal antes de subir archivos para organizarlos correctamente.
+                </div>
+                <div class="storage-info">
+                    <div class="storage-bar-label">
+                        <span>💾 Almacenamiento usado</span>
+                        <span id="storageText">Calculando...</span>
+                    </div>
+                    <div class="storage-bar">
+                        <div class="storage-bar-fill" id="storageBarFill"></div>
+                    </div>
+                    <div class="storage-hint" id="storageHint"></div>
+                </div>
+                <input type="file" id="audioInput" accept="audio/*,video/*" multiple>
+                <input type="file" id="logoInput" accept="image/*">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== ALMACENAMIENTO: IndexedDB en lugar de localStorage =====
+        // localStorage tiene un límite muy chico (5-10MB aprox.), insuficiente para
+        // guardar archivos de audio/video en base64. IndexedDB permite guardar
+        // muchísimos más datos (cientos de MB, a veces GB, según el navegador/dispositivo).
+        const DB_NAME = 'SpotRadioDB';
+        const DB_VERSION = 1;
+        const STORE_NAME = 'appData';
+        let db = null;
+
+        function openDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(DB_NAME, DB_VERSION);
+                request.onupgradeneeded = (event) => {
+                    const database = event.target.result;
+                    if (!database.objectStoreNames.contains(STORE_NAME)) {
+                        database.createObjectStore(STORE_NAME);
+                    }
+                };
+                request.onsuccess = (event) => resolve(event.target.result);
+                request.onerror = (event) => reject(event.target.error);
+            });
+        }
+
+        function idbGet(key) {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, 'readonly');
+                const req = tx.objectStore(STORE_NAME).get(key);
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+            });
+        }
+
+        function idbSet(key, value) {
+            return new Promise((resolve, reject) => {
+                const tx = db.transaction(STORE_NAME, 'readwrite');
+                const req = tx.objectStore(STORE_NAME).put(value, key);
+                req.onsuccess = () => resolve();
+                req.onerror = () => reject(req.error);
+            });
+        }
+
+        const defaultChannels = {
+            0: { name: 'BEAT FM', logo: '🎵', files: [] },
+            1: { name: 'ROCK FM', logo: '🎸', files: [] },
+            2: { name: 'CHILL FM', logo: '🌊', files: [] }
+        };
+
+        let channels = defaultChannels;
+        let currentChannel = 0;
+        let currentTrackIndex = 0;
+
+        const audioPlayer = document.getElementById('audioPlayer');
+        const playBtn = document.getElementById('playBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const volumeSlider = document.getElementById('volumeSlider');
+        const volumeValue = document.getElementById('volumeValue');
+        const trackName = document.getElementById('trackName');
+        const stationName = document.getElementById('stationName');
+        const stationLogo = document.getElementById('stationLogo');
+        const audioInput = document.getElementById('audioInput');
+        const logoInput = document.getElementById('logoInput');
+        const playlist = document.getElementById('playlist');
+        const playlistCount = document.getElementById('playlistCount');
+        const storageText = document.getElementById('storageText');
+        const storageBarFill = document.getElementById('storageBarFill');
+        const storageHint = document.getElementById('storageHint');
+
+        async function initStorage() {
+            try {
+                db = await openDB();
+                const stored = await idbGet('channels');
+                if (stored) {
+                    channels = stored;
+                    return;
+                }
+                // Migración automática: si había datos viejos en localStorage, los pasamos a IndexedDB
+                const legacy = localStorage.getItem('channels');
+                if (legacy) {
+                    try {
+                        channels = JSON.parse(legacy);
+                        await idbSet('channels', channels);
+                        localStorage.removeItem('channels');
+                    } catch (e) {
+                        channels = defaultChannels;
+                    }
+                } else {
+                    channels = defaultChannels;
+                }
+            } catch (e) {
+                console.error('No se pudo abrir IndexedDB, usando datos por defecto:', e);
+                channels = defaultChannels;
+            }
+        }
+
+        async function saveChannels() {
+            try {
+                if (!db) db = await openDB();
+                await idbSet('channels', channels);
+                updateStorageInfo();
+            } catch (e) {
+                console.error('Error guardando canales:', e);
+                alert('No se pudo guardar: el almacenamiento está lleno o no disponible en este navegador. Probá liberar espacio o usar archivos más livianos.');
+            }
+        }
+
+        async function updateStorageInfo() {
+            if (!storageText || !storageBarFill) return;
+            try {
+                if (navigator.storage && navigator.storage.estimate) {
+                    const { usage, quota } = await navigator.storage.estimate();
+                    const usedMB = (usage / (1024 * 1024)).toFixed(1);
+                    const quotaMB = (quota / (1024 * 1024)).toFixed(0);
+                    const percent = quota ? Math.min(100, (usage / quota) * 100) : 0;
+                    storageText.textContent = `${usedMB} MB de ~${quotaMB} MB disponibles`;
+                    storageBarFill.style.width = percent.toFixed(1) + '%';
+                    if (storageHint) {
+                        storageHint.textContent = percent > 85
+                            ? '⚠️ Te estás quedando sin espacio. Eliminá algunos archivos si podés.'
+                            : 'Guardado con IndexedDB: mucho más espacio que el almacenamiento clásico del navegador.';
+                    }
+                } else {
+                    storageText.textContent = 'No disponible en este navegador';
+                }
+            } catch (e) {
+                storageText.textContent = 'No disponible';
+            }
+        }
+
+        function updateDisplay() {
+            const channel = channels[currentChannel];
+            stationName.textContent = channel.name;
+            // innerHTML porque el logo puede ser un emoji (texto) o un <img> subido por el usuario
+            stationLogo.innerHTML = channel.logo;
+            updatePlaylist();
+        }
+
+        // Detiene/limpia el reproductor por completo (sin disparar autoplay)
+        function resetPlayer() {
+            audioPlayer.pause();
+            audioPlayer.removeAttribute('src');
+            audioPlayer.load();
+            currentTrackIndex = 0;
+            trackName.textContent = 'No hay archivo reproduciéndose';
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="white"/></svg>';
+        }
+
+        // Cambia de canal: corta el audio del canal anterior y, si estaba sonando algo,
+        // arranca automáticamente el primer track del nuevo canal (como una radio real).
+        function switchChannel(newChannel) {
+            const wasPlaying = !audioPlayer.paused;
+            currentChannel = newChannel;
+            resetPlayer();
+            updateDisplay();
+
+            const channel = channels[currentChannel];
+            if (wasPlaying && channel.files.length > 0) {
+                playTrack(0);
+            }
+        }
+
+        function updatePlaylist() {
+            const channel = channels[currentChannel];
+            playlistCount.textContent = `${channel.files.length} archivos`;
+
+            if (channel.files.length === 0) {
+                playlist.innerHTML = `
+                    <div class="playlist-header">
+                        <div class="playlist-title">${channel.name}</div>
+                        <div class="playlist-count">${channel.files.length} archivos</div>
+                    </div>
+                    <div class="playlist-empty">
+                        No hay archivos en este canal.<br>
+                        ¡Sube tu primer track!
+                    </div>
+                `;
+            } else {
+                playlist.innerHTML = `
+                    <div class="playlist-header">
+                        <div class="playlist-title">${channel.name}</div>
+                        <div class="playlist-count">${channel.files.length} archivos</div>
+                    </div>
+                    ${channel.files.map((file, index) => `
+                        <div class="playlist-item" onclick="playTrack(${index})">
+                            ${index + 1}. ${file.name}
+                        </div>
+                    `).join('')}
+                `;
+            }
+        }
+
+        function playTrack(index) {
+            const channel = channels[currentChannel];
+            if (channel.files[index]) {
+                currentTrackIndex = index;
+                audioPlayer.src = channel.files[index].data;
+                audioPlayer.play();
+                trackName.textContent = channel.files[index].name;
+                playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" fill="white"/></svg>';
+            }
+        }
+
+        playBtn.addEventListener('click', () => {
+            if (audioPlayer.paused) {
+                if (audioPlayer.src) {
+                    audioPlayer.play();
+                    playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" fill="white"/></svg>';
+                } else {
+                    playTrack(0);
+                }
+            } else {
+                audioPlayer.pause();
+                playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="white"/></svg>';
+            }
+        });
+
+        stopBtn.addEventListener('click', () => {
+            audioPlayer.pause();
+            audioPlayer.currentTime = 0;
+            trackName.textContent = 'No hay archivo reproduciéndose';
+            playBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z" fill="white"/></svg>';
+        });
+
+        nextBtn.addEventListener('click', () => {
+            const channel = channels[currentChannel];
+            if (channel.files.length === 0) return;
+            const newIndex = (currentTrackIndex + 1) % channel.files.length;
+            playTrack(newIndex);
+        });
+
+        prevBtn.addEventListener('click', () => {
+            const channel = channels[currentChannel];
+            if (channel.files.length === 0) return;
+            const newIndex = currentTrackIndex === 0 ? channel.files.length - 1 : currentTrackIndex - 1;
+            playTrack(newIndex);
+        });
+
+        volumeSlider.addEventListener('input', (e) => {
+            const vol = e.target.value;
+            audioPlayer.volume = vol / 100;
+            volumeValue.textContent = vol + '%';
+        });
+
+        document.getElementById('nextChannel').addEventListener('click', () => {
+            const next = (currentChannel + 1) % Object.keys(channels).length;
+            switchChannel(next);
+        });
+
+        document.getElementById('prevChannel').addEventListener('click', () => {
+            const prev = currentChannel === 0 ? Object.keys(channels).length - 1 : currentChannel - 1;
+            switchChannel(prev);
+        });
+
+        stationName.addEventListener('click', () => {
+            const newName = prompt('Nuevo nombre del canal:', channels[currentChannel].name);
+            if (newName) {
+                channels[currentChannel].name = newName;
+                saveChannels();
+                updateDisplay();
+            }
+        });
+
+        audioInput.addEventListener('change', (e) => {
+            const files = Array.from(e.target.files);
+            const targetChannel = currentChannel; // por si el usuario cambia de canal mientras se procesa
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    channels[targetChannel].files.push({
+                        name: file.name,
+                        data: event.target.result
+                    });
+                    saveChannels();
+                    if (targetChannel === currentChannel) {
+                        updatePlaylist();
+                    }
+                };
+                reader.readAsDataURL(file);
+            });
+            e.target.value = ''; // permite volver a elegir el mismo archivo más adelante
+        });
+
+        logoInput.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            const targetChannel = currentChannel;
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const logoHtml = `<img src="${event.target.result}" style="width:100%; height:100%; object-fit:cover; border-radius:20px;">`;
+                    channels[targetChannel].logo = logoHtml;
+                    if (targetChannel === currentChannel) {
+                        stationLogo.innerHTML = logoHtml;
+                    }
+                    saveChannels();
+                };
+                reader.readAsDataURL(file);
+            }
+            e.target.value = '';
+        });
+
+        stationLogo.addEventListener('click', () => {
+            logoInput.click();
+        });
+
+        audioPlayer.addEventListener('ended', () => {
+            const channel = channels[currentChannel];
+            if (channel.files.length === 0) return;
+            const newIndex = (currentTrackIndex + 1) % channel.files.length;
+            playTrack(newIndex); // al llegar al final, vuelve al primer track (loop continuo, como una radio)
+        });
+
+        // Pedimos almacenamiento persistente para reducir el riesgo de que el navegador
+        // borre los datos automáticamente cuando el dispositivo necesita espacio.
+        if (navigator.storage && navigator.storage.persist) {
+            navigator.storage.persist().catch(() => {});
+        }
+
+        (async () => {
+            await initStorage();
+            updateDisplay();
+            updateStorageInfo();
+        })();
+    </script>
+</body>
+</html>
